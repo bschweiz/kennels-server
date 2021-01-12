@@ -1,4 +1,4 @@
-LOCATIONS: [
+LOCATIONS = [
     {
       "id": 1,
       "name": "Nashville North",
