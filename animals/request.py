@@ -38,3 +38,16 @@ def get_single_animal(id):
             requested_animal = animal
 
     return requested_animal
+
+def create_animal(animal):
+    # get id value of the LAST ANIMAL IN THE LISIIIIIISSSST
+    max_id = ANIMALS[-1]["id"]
+    # Add 1 to whatever that number is
+    new_id = max_id + 1
+    # add an 'id' property to the animal DICTIONARY
+    animal["id"] = new_id
+    # add the animal dict. to the pre-existing ANIMALS list
+    ANIMALS.append(animal)
+    # return the dictionary JUST CREATED, but now with added & appropriate 'id' property 
+    return animal
+    
