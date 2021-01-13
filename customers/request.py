@@ -35,3 +35,16 @@ def get_single_customer(id):
             requested_customer = customer
 
     return requested_customer
+
+def create_customer(customer):
+    # get id value of the LAST CUSTOMER IN THE LISIIIIIISSSST
+    max_id = CUSTOMERS[-1]["id"]
+    # Add 1 to whatever that number is
+    new_id = max_id + 1
+    # add an 'id' property to the customer DICTIONARY
+    customer["id"] = new_id
+    # add the customer dict. to the pre-existing CUSTOMERS list
+    CUSTOMERS.append(customer)
+    # return the dictionary JUST CREATED, but now with added & appropriate 'id' property 
+    return customer
+    

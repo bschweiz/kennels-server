@@ -3,8 +3,8 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from animals import get_all_animals, get_single_animal, create_animal
 from locations import get_all_locations, get_single_location, create_location
-from employees import get_all_employees, get_single_employee
-from customers import get_all_customers, get_single_customer
+from customers import get_all_customers, get_single_customer, create_customer
+from employees import get_all_employees, get_single_employee, create_employee
 
 # Here's a class. It inherits from another class.
 # For now, think of a class as a container for functions that
@@ -65,27 +65,27 @@ class HandleRequests(BaseHTTPRequestHandler):
         # First we check if it's animals
         if resource == "animals":
             if id is not None:
-                response = f'{get_single_animal(id)}'
+                response = f"{get_single_animal(id)}"
             else:
-                response = f'{get_all_animals()}'
-        #Then we check if it's locations
+                response = f"{get_all_animals()}"
+        #Then we check if it"s locations
         elif resource == "locations":
             if id is not None:
-                response = f'{get_single_location(id)}'
+                response = f"{get_single_location(id)}"
             else:
-                response = f'{get_all_locations()}'
-        #Then we check if it's employees
+                response = f"{get_all_locations()}"
+        #Then we check if it"s employees
         elif resource == "employees":
             if id is not None:
-                response = f'{get_single_employee(id)}'
+                response = f"{get_single_employee(id)}"
             else:
-                response = f'{get_all_employees()}'
-        #And finally we check if it's customers
+                response = f"{get_all_employees()}"
+        #And finally we check if it"s customers
         elif resource == "customers":
             if id is not None:
-                response = f'{get_single_customer(id)}'
+                response = f"{get_single_customer(id)}"
             else:
-                response = f'{get_all_customers()}'
+                response = f"{get_all_customers()}"
 
     # This weird code sends a response back to the client
         self.wfile.write(f"{response}".encode())
@@ -103,17 +103,29 @@ class HandleRequests(BaseHTTPRequestHandler):
         # PARSE THE URL, THIS CREATES A TUUUUUUUUUUUUUUUUUUUUUUUUUUIUUPLE!!
         (resource, id) = self.parse_url(self.path)
         # initialize new animal, location, whatever
-        new_dictionary = None
+        new_animal = None
+        new_location = None
+        new_customer = None
+        new_employee = None
         # add new animal to lst, i will define the function to do that next
         if resource == "animals":
-            new_dictionary = create_animal(post_body)
-        # same but for locations
-        elif resource == "locations":
-            new_dictionary = create_location(post_body)
         # finally, ENCODE THE NEWWWW LOCATIONnn and send in response
-        self.wfile.write(f'{new_dictionary}'.encode())
+            new_animal = create_animal(post_body)
+            self.wfile.write(f"{new_animal}".encode())
+        # same but for locations
+        if resource == "locations":
+            new_location = create_location(post_body)
+            self.wfile.write(f"{new_location}".encode())
+        # same but for customers
+        if resource == "customers":
+            new_customer = create_customer(post_body)
+            self.wfile.write(f"{new_customer}".encode())
+        # same but for employees
+        if resource == "employees":
+            new_employee = create_employee(post_body)
+            self.wfile.write(f"{new_employee}".encode())
 
-    # Here's a method on the class that overrides the parent's method.
+    # Here"s a method on the class that overrides the parent's method.
     # It handles any PUT request.
 
     def do_PUT(self):

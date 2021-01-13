@@ -35,3 +35,16 @@ def get_single_employee(id):
             requested_employee = employee
 
     return requested_employee
+
+def create_employee(employee):
+    # get id value of the LAST EMPLOYEE IN THE LISIIIIIISSSST
+    max_id = EMPLOYEES[-1]["id"]
+    # Add 1 to whatever that number is
+    new_id = max_id + 1
+    # add an 'id' property to the employee DICTIONARY
+    employee["id"] = new_id
+    # add the employee dict. to the pre-existing EMPLOYEES list
+    EMPLOYEES.append(employee)
+    # return the dictionary JUST CREATED, but now with added & appropriate 'id' property 
+    return employee
+    
