@@ -27,3 +27,15 @@ def get_single_location(id):
             requested_location = location
 
     return requested_location
+
+def create_location(location):
+    # get id value of the LAST LOCATION IN THE LISIIIIIISSSST
+    max_id = LOCATIONS[-1]["id"]
+    # Add 1 to whatever that number is
+    new_id = max_id + 1
+    # add an 'id' property to the location DICTIONARY
+    location["id"] = new_id
+    # add the location dict. to the pre-existing LOCATIONS list
+    LOCATIONS.append(location)
+    # return the dictionary JUST CREATED, but now with added & appropriate 'id' property 
+    return location
