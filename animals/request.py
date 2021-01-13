@@ -51,3 +51,15 @@ def create_animal(animal):
     # return the dictionary JUST CREATED, but now with added & appropriate 'id' property 
     return animal
     
+def delete_animal(id):
+    # initial -1 value for animal index, in case one isn't found
+    animal_index = -1
+    # iterate the ANIMALS list, but use !!!enumerate()!!! so that
+    #you can access the index value of each item
+    for index, animal in enumerate(ANIMALS):
+        if animal["id"] == id:
+            # Found the animal. store the current index.
+            animal_index = index
+    # if the animal was found, use !!!pop(int)!!! to remove it from the list
+    if animal_index >= 0:
+        ANIMALS.pop(animal_index)
