@@ -35,3 +35,29 @@ def get_single_customer(id):
             requested_customer = customer
 
     return requested_customer
+
+def create_customer(customer):
+    # get id value of the LAST CUSTOMER IN THE LISIIIIIISSSST
+    max_id = CUSTOMERS[-1]["id"]
+    # Add 1 to whatever that number is
+    new_id = max_id + 1
+    # add an 'id' property to the customer DICTIONARY
+    customer["id"] = new_id
+    # add the customer dict. to the pre-existing CUSTOMERS list
+    CUSTOMERS.append(customer)
+    # return the dictionary JUST CREATED, but now with added & appropriate 'id' property 
+    return customer
+    
+def delete_customer(id):
+    # initial -1 value for customer index, in case one isn't found
+    customer_index = -1
+    # iterate the CUSTOMERS list, but use !!!enumerate()!!! so that
+    #you can access the index value of each item
+    for index, customer in enumerate(CUSTOMERS):
+        if customer["id"] == id:
+            # Found the customer. store the current index.
+            customer_index = index
+    # if the customer was found, use !!!pop(int)!!! to remove it from the list
+    if customer_index >= 0:
+        CUSTOMERS.pop(customer_index)
+

@@ -27,3 +27,28 @@ def get_single_location(id):
             requested_location = location
 
     return requested_location
+
+def create_location(location):
+    # get id value of the LAST LOCATION IN THE LISIIIIIISSSST
+    max_id = LOCATIONS[-1]["id"]
+    # Add 1 to whatever that number is
+    new_id = max_id + 1
+    # add an 'id' property to the location DICTIONARY
+    location["id"] = new_id
+    # add the location dict. to the pre-existing LOCATIONS list
+    LOCATIONS.append(location)
+    # return the dictionary JUST CREATED, but now with added & appropriate 'id' property 
+    return location
+
+def delete_location(id):
+    # initial -1 value for location index, in case one isn't found
+    location_index = -1
+    # iterate the LOCATIONS list, but use !!!enumerate()!!! so that
+    #you can access the index value of each item
+    for index, location in enumerate(LOCATIONS):
+        if location["id"] == id:
+            # Found the location. store the current index.
+            location_index = index
+    # if the location was found, use !!!pop(int)!!! to remove it from the list
+    if location_index >= 0:
+        LOCATIONS.pop(location_index)
