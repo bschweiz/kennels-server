@@ -48,3 +48,16 @@ def create_customer(customer):
     # return the dictionary JUST CREATED, but now with added & appropriate 'id' property 
     return customer
     
+def delete_customer(id):
+    # initial -1 value for customer index, in case one isn't found
+    customer_index = -1
+    # iterate the CUSTOMERS list, but use !!!enumerate()!!! so that
+    #you can access the index value of each item
+    for index, customer in enumerate(CUSTOMERS):
+        if customer["id"] == id:
+            # Found the customer. store the current index.
+            customer_index = index
+    # if the customer was found, use !!!pop(int)!!! to remove it from the list
+    if customer_index >= 0:
+        CUSTOMERS.pop(customer_index)
+
