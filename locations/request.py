@@ -52,3 +52,12 @@ def delete_location(id):
     # if the location was found, use !!!pop(int)!!! to remove it from the list
     if location_index >= 0:
         LOCATIONS.pop(location_index)
+
+def update_location(id, new_location):
+    # iterate the LOCAIONS list, but use !!!!enumerate() so that
+    #you can access the index value of each item.
+    for index, location in enumerate(LOCAIONS):
+        if location["id"] == id:
+            # found the proper LOCAION now update it
+            LOCAIONS[index] = new_location
+            break

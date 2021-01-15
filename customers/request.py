@@ -61,3 +61,11 @@ def delete_customer(id):
     if customer_index >= 0:
         CUSTOMERS.pop(customer_index)
 
+def update_customer(id, new_customer):
+    # iterate the CUSTOMERS list, but use !!!!enumerate() so that
+    #you can access the index value of each item.
+    for index, customer in enumerate(CUSTOMERS):
+        if customer["id"] == id:
+            # found the proper CUSTOMER now update it
+            CUSTOMERS[index] = new_customer
+            break

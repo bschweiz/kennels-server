@@ -1,10 +1,25 @@
 import json
 from http.server import BaseHTTPRequestHandler, HTTPServer
-from http.server import BaseHTTPRequestHandler, HTTPServer
-from animals import get_all_animals, get_single_animal, create_animal, delete_animal
-from locations import get_all_locations, get_single_location, create_location, delete_location
-from customers import get_all_customers, get_single_customer, create_customer, delete_customer
-from employees import get_all_employees, get_single_employee, create_employee, delete_employee
+from animals import get_all_animals
+from animals import get_single_animal
+from animals import create_animal
+from animals import delete_animal
+from animals import update_animal
+from locations import get_all_locations
+from locations import get_single_location
+from locations import create_location
+from locations import delete_location
+from locations import update_location
+from customers import get_all_customers
+from customers import get_single_customer
+from customers import create_customer
+from customers import delete_customer
+from customers import update_customer
+from employees import get_all_employees
+from employees import get_single_employee
+from employees import create_employee
+from employees import delete_employee
+from employees import update_employee
 
 # Here's a class. It inherits from another class.
 # For now, think of a class as a container for functions that
@@ -103,27 +118,19 @@ class HandleRequests(BaseHTTPRequestHandler):
         # PARSE THE URL, THIS CREATES A TUUUUUUUUUUUUUUUUUUUUUUUUUUIUUPLE!!
         (resource, id) = self.parse_url(self.path)
         # initialize new animal, location, whatever
-        new_animal = None
-        new_location = None
-        new_customer = None
-        new_employee = None
-        # add new animal to lst, i will define the function to do that next
+        new_dictionary = None
+        # check to see what the path aka resource was
         if resource == "animals":
-        # finally, ENCODE THE NEWWWW LOCATIONnn and send in response
-            new_animal = create_animal(post_body)
-            self.wfile.write(f"{new_animal}".encode())
-        # same but for locations
-        if resource == "locations":
-            new_location = create_location(post_body)
-            self.wfile.write(f"{new_location}".encode())
-        # same but for customers
-        if resource == "customers":
-            new_customer = create_customer(post_body)
-            self.wfile.write(f"{new_customer}".encode())
-        # same but for employees
-        if resource == "employees":
-            new_employee = create_employee(post_body)
-            self.wfile.write(f"{new_employee}".encode())
+            new_dictionary = create_animal(post_body)
+        elif resource == "locations":
+            new_dictionary = create_location(post_body)
+        elif resource == "customers":
+            new_dictionary = create_customer(post_body)
+        elif resource == "employees":
+            new_dictionary = create_employee(post_body)
+
+        self.wfile.write(f"{new_dictionary}".encode())
+
     # adding delete functionality
     def do_DELETE(self):
         # Set a 204 response code
@@ -154,8 +161,28 @@ class HandleRequests(BaseHTTPRequestHandler):
         # It handles any PUT request.
 
     def do_PUT(self):
-        self.do_POST()
-
+        self._set_headers(204)
+        content_len = int(self.headers.get('content-length', 0))
+        post_body = self.rfile.read(content_len)
+        post_body = json.loads(post_body)
+        # parse the URL 
+        (resource, id) = self.parse_url(self.path)
+        # delete a single animal from the list
+        if resource == "animals":
+            update_animal(id, post_body)
+            self.wfile.write("".encode())
+        # delete a single location from the list
+        if resource == "locations":
+            update_location(id, post_body)
+            self.wfile.write("".encode())
+        # delete a single customer from the list
+        if resource == "customers":
+            update_customer(id, post_body)
+            self.wfile.write("".encode())
+        # delete a single employee from the list
+        if resource == "employees":
+            update_employee(id, post_body)
+            self.wfile.write("".encode())
 
 # This function is not inside the class. It is the starting
 # point of this application.

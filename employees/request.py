@@ -60,3 +60,12 @@ def delete_employee(id):
   # if the employee was found, use !!!pop(int)!!! to remove it from the list
   if employee_index >= 0:
       EMPLOYEES.pop(employee_index)
+
+def update_employee(id, new_employee):
+  # iterate the EMPLOYEES list, but use !!!!enumerate() so that
+  #you can access the index value of each item.
+  for index, employee in enumerate(EMPLOYEES):
+      if employee["id"] == id:
+          # found the proper CUSTOMER now update it
+          EMPLOYEES[index] = new_employee
+          break
