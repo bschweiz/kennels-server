@@ -1,3 +1,7 @@
+import sqlite3
+import json
+from models import Employee
+
 EMPLOYEES = [
     {
       "name": "Ashton",
@@ -20,7 +24,30 @@ EMPLOYEES = [
 ]
 
 def get_all_employees():
-    return EMPLOYEES
+    with sqlite3.connect("./kennel.db") as conn:
+      conn.row_factory = sqlite3.Row
+      db_cursor = conn.cursor()
+      # write the SQL QUERY
+      db_cursor.execute("""
+      SELECT
+        e.id,
+        e.name,
+        e.location_id,
+        e.address
+      FROM employee e
+      """)
+      # inittialize new empty LIST to hold all the emp DICTs
+      employees = []
+      # convert rows of data into a PYTHON LIST
+      dataset = db_cursor.fetchall()
+      # iterate the list
+      for row in dataset:
+          employee = Employee(row['id'], row['name'], 
+                            row['location_id'], 
+                            row['address'])
+          employees.append(employee.__dict__)
+    return json.dumps(employees)
+
 # Function with a single parameter
 def get_single_employee(id):
     # Variable to hold the found employee, if it exists

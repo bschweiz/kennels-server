@@ -1,3 +1,7 @@
+import sqlite3
+import json
+from models import Location
+
 LOCATIONS = [
     {
       "id": 1,
@@ -12,8 +16,27 @@ LOCATIONS = [
   ]
 
 def get_all_locations():
-    return LOCATIONS
-# Function with a single parameter
+    with sqlite3.connect("./kennel.db") as conn:
+      conn.row_factory = sqlite3.Row
+      db_cursor = conn.cursor()
+      # write the SQL QUERY
+      db_cursor.execute("""
+      SELECT
+        l.id,
+        l.address
+      FROM location l
+      """)
+      # inittialize new empty LIST to hold all the emp DICTs
+      locations = []
+      # convert rows of data into a PYTHON LIST
+      dataset = db_cursor.fetchall()
+      # iterate the list
+      for row in dataset:
+          location = Location(row['id'], 
+                            row['address'])
+          locations.append(location.__dict__)
+    return json.dumps(locations)
+
 def get_single_location(id):
     # Variable to hold the found location, if it exists
     requested_location = None

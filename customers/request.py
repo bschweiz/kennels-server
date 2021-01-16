@@ -1,3 +1,7 @@
+import sqlite3
+import json
+from models import Customer
+
 CUSTOMERS = [
     {
       "email": "bob@email.com",
@@ -20,8 +24,30 @@ CUSTOMERS = [
 ]
 
 def get_all_customers():
-    return CUSTOMERS
-# Function with a single parameter
+    with sqlite3.connect("./kennel.db") as conn:
+      conn.row_factory = sqlite3.Row
+      db_cursor = conn.cursor()
+      # write the SQL QUERY
+      db_cursor.execute("""
+      SELECT
+        c.id,
+        c.name,
+        c.email,
+        c.password
+      FROM customer c
+      """)
+      # inittialize new empty LIST to hold all the emp DICTs
+      customers = []
+      # convert rows of data into a PYTHON LIST
+      dataset = db_cursor.fetchall()
+      # iterate the list
+      for row in dataset:
+          customer = Customer(row['id'], row['name'], 
+                            row['email'], 
+                            row['password'])
+          customers.append(customer.__dict__)
+    return json.dumps(customers)
+
 def get_single_customer(id):
     # Variable to hold the found customer, if it exists
     requested_customer = None
