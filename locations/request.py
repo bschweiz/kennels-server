@@ -2,54 +2,45 @@ import sqlite3
 import json
 from models import Location
 
-LOCATIONS = [
-    {
-      "id": 1,
-      "name": "Nashville North",
-      "address": "8422 Johnson Pike"
-    },
-    {
-      "id": 2,
-      "name": "Nashville South",
-      "address": "209 Emory Drive"
-    }
-  ]
-
 def get_all_locations():
     with sqlite3.connect("./kennel.db") as conn:
-      conn.row_factory = sqlite3.Row
-      db_cursor = conn.cursor()
-      # write the SQL QUERY
-      db_cursor.execute("""
-      SELECT
-        l.id,
-        l.address
-      FROM location l
-      """)
-      # inittialize new empty LIST to hold all the emp DICTs
-      locations = []
-      # convert rows of data into a PYTHON LIST
-      dataset = db_cursor.fetchall()
-      # iterate the list
-      for row in dataset:
-          location = Location(row['id'], 
-                            row['address'])
-          locations.append(location.__dict__)
+        conn.row_factory = sqlite3.Row
+        db_cursor = conn.cursor()
+        # write the SQL QUERY
+        db_cursor.execute("""
+        SELECT
+            l.id,
+            l.address
+        FROM location l
+        """)
+        # inittialize new empty LIST to hold all the emp DICTs
+        locations = []
+        # convert rows of data into a PYTHON LIST
+        dataset = db_cursor.fetchall()
+        # iterate the list
+        for row in dataset:
+            location = Location(row['id'],
+                                row['address'])
+            locations.append(location.__dict__)
     return json.dumps(locations)
 
+
 def get_single_location(id):
-    # Variable to hold the found location, if it exists
-    requested_location = None
+    with sqlite3.connect("./kennel.db") as conn:
+        conn.row_factory = sqlite3.Row
+        db_cursor = conn.cursor()
+        db_cursor.execute("""
+        SELECT
+            l.id,
+            l.address
+        FROM location l
+        WHERE l.id = ?
+        """, (id,))
+        data = db_cursor.fetchone()
+        location = Location(data['id'],
+                            data['address'])
+        return json.dumps(location.__dict__)
 
-    # Iterate the LOCATIONS list above. Very similar to the
-    # for..of loops you used in JavaScript.
-    for location in LOCATIONS:
-        # Dictionaries in Python use [] notation to find a key
-        # instead of the dot notation that JavaScript used.
-        if location["id"] == id:
-            requested_location = location
-
-    return requested_location
 
 def create_location(location):
     # get id value of the LAST LOCATION IN THE LISIIIIIISSSST
@@ -60,14 +51,15 @@ def create_location(location):
     location["id"] = new_id
     # add the location dict. to the pre-existing LOCATIONS list
     LOCATIONS.append(location)
-    # return the dictionary JUST CREATED, but now with added & appropriate 'id' property 
+    # return the dictionary JUST CREATED, but now with added & appropriate 'id' property
     return location
+
 
 def delete_location(id):
     # initial -1 value for location index, in case one isn't found
     location_index = -1
     # iterate the LOCATIONS list, but use !!!enumerate()!!! so that
-    #you can access the index value of each item
+    # you can access the index value of each item
     for index, location in enumerate(LOCATIONS):
         if location["id"] == id:
             # Found the location. store the current index.
@@ -76,9 +68,10 @@ def delete_location(id):
     if location_index >= 0:
         LOCATIONS.pop(location_index)
 
+
 def update_location(id, new_location):
     # iterate the LOCAIONS list, but use !!!!enumerate() so that
-    #you can access the index value of each item.
+    # you can access the index value of each item.
     for index, location in enumerate(LOCAIONS):
         if location["id"] == id:
             # found the proper LOCAION now update it

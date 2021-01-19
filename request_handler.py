@@ -48,25 +48,30 @@ class HandleRequests(BaseHTTPRequestHandler):
 
     #this is how we isolate the animal ID NUMBER FROM THE URL aka self.path 
     def parse_url(self, path):
-        # Just like splitting a string in JavaScript. If the
-        # path is "/animals/1", the resulting list will
-        # have "" at index 0, "animals" at index 1, and "1"
-        # at index 2.
         path_params = path.split("/")
         resource = path_params[1]
-        id = None
 
-        # Try to get the item at index 2
-        try:
-            # Convert the string "1" to the integer 1
-            # This is the new parseInt()
-            id = int(path_params[2])
-        except IndexError:
-            pass  # No route parameter exists: /animals
-        except ValueError:
-            pass  # Request had trailing slash: /animals/
+        # chekc if there is a "?" aka which makes it a QUERY
+        if "?" in resource:
+            # given url: http://localhost:8088/customers?email=jenna@bla.com
+            param = resource.split("?")[1] # email=janna@bla.com
+            resource = resource.split("?")[0] # 'customers'
+            pair = param.split("=") # ['email','jenna@bla.com']
+            key = pair[0] # 'email'
+            value = pair[1] # 'jenna@bla.com
 
-        return (resource, id)  # This is a tuple
+            return ( resource, key, value )
+        # or if it's not a query:
+        else: 
+            id = None
+            try:
+                id = int(path_params[2])
+            except IndexError:
+                pass # No route parameter exists: /animals
+            except ValueError:
+                pass # Request had treailing slash: /animals/
+
+            return ( resource, id )
 
     # Here's a method on the class that overrides the parent's method.
     # It handles any GET request.
@@ -74,36 +79,33 @@ class HandleRequests(BaseHTTPRequestHandler):
         # Set the response code to 'Ok'
         self._set_headers(200)
         response = {} #default response
-
-        (resource, id) = self.parse_url(self.path)
-        # It's if..else statements to check for various paths
-        # First we check if it's animals
-        if resource == "animals":
-            if id is not None:
-                response = f"{get_single_animal(id)}"
-            else:
-                response = f"{get_all_animals()}"
-        #Then we check if it"s locations
-        elif resource == "locations":
-            if id is not None:
-                response = f"{get_single_location(id)}"
-            else:
-                response = f"{get_all_locations()}"
-        #Then we check if it"s employees
-        elif resource == "employees":
-            if id is not None:
-                response = f"{get_single_employee(id)}"
-            else:
-                response = f"{get_all_employees()}"
-        #And finally we check if it"s customers
-        elif resource == "customers":
-            if id is not None:
-                response = f"{get_single_customer(id)}"
-            else:
-                response = f"{get_all_customers()}"
-
-    # This weird code sends a response back to the client
-        self.wfile.write(f"{response}".encode())
+        # REFACTOR FROM CH10
+        # Parse the URL and store the tuple as a variable
+        parsed = self.parse_url(self.path)
+        # Response from parse_url is a tuble with 2 items in it, WHICH MEANS
+        # that the request was for '/animals' or '/animals/2'
+        if len(parsed) == 2:
+            ( resource, id ) = parsed 
+            if resource == "animals":
+                if id is not None:
+                    response = f'{get_single_animal(id)}'
+                else:
+                    response = f'{get_all_animals()}'
+            if resource == "customers":
+                if id is not None:
+                    response = f'{get_single_customer(id)}'
+                else:
+                    response = f'{get_all_customers()}'
+        # Response from parse_url is a tuple with 3 items, WHICH MEANS
+        # that the request was for '/resource?parameter=value'
+        elif len(parsed) == 3:
+            ( resource, key, value) = parsed
+            # is the resource "customers" 
+            # AND was there a query param that specified email as a filtering value?
+            if key == 'emial' and resource == 'customers':
+                response = get_customers_by_email(value)
+        # This weird code sends a response back to the client
+        self.wfile.write(response.encode())
 
     # Here's a method on the class that overrides the parent's method.
     # It handles any POST request.
