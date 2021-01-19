@@ -52,15 +52,15 @@ def get_customers_by_email(email):
         db_cursor = conn.cursor()
         # Write teh SQL query to get the information you want
         db_cursor.execute("""
-        select  
+        SELECT  
             c.id,
             c.name,
             c.address,
             c.email,
             c.password
-        from Customer c
+        FROM Customer c
         WHERE c.email = ?
-
+        
         """, ( email, ))
 
 def create_customer(customer):

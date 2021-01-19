@@ -2,6 +2,7 @@ import json
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from animals import get_all_animals
 from animals import get_single_animal
+from animals import get_animals_by_location
 from animals import create_animal
 from animals import delete_animal
 from animals import update_animal
@@ -12,6 +13,7 @@ from locations import delete_location
 from locations import update_location
 from customers import get_all_customers
 from customers import get_single_customer
+from customers import get_customers_by_email
 from customers import create_customer
 from customers import delete_customer
 from customers import update_customer
@@ -53,12 +55,12 @@ class HandleRequests(BaseHTTPRequestHandler):
 
         # chekc if there is a "?" aka which makes it a QUERY
         if "?" in resource:
-            # given url: http://localhost:8088/customers?email=jenna@bla.com
+            # given url: http://localhost:8088/customers?email=jenna@bla.com or /animals?location_id=1
             param = resource.split("?")[1] # email=janna@bla.com
-            resource = resource.split("?")[0] # 'customers'
-            pair = param.split("=") # ['email','jenna@bla.com']
-            key = pair[0] # 'email'
-            value = pair[1] # 'jenna@bla.com
+            resource = resource.split("?")[0] # 'customers' or 'animals'
+            pair = param.split("=") # ['email','jenna@bla.com'] or ['location_id','1']
+            key = pair[0] # 'email' or 'location_id'
+            value = pair[1] # 'jenna@bla.com' or '1'
 
             return ( resource, key, value )
         # or if it's not a query:
@@ -99,10 +101,10 @@ class HandleRequests(BaseHTTPRequestHandler):
         # Response from parse_url is a tuple with 3 items, WHICH MEANS
         # that the request was for '/resource?parameter=value'
         elif len(parsed) == 3:
-            ( resource, key, value) = parsed
-            # is the resource "customers" 
+            ( resource, key, value) = parsed # practice A(get animals by location): (animals, location_id, 1)
+            # is the resource "customers" or "animals"
             # AND was there a query param that specified email as a filtering value?
-            if key == 'emial' and resource == 'customers':
+            if key == 'email' and resource == 'customers':
                 response = get_customers_by_email(value)
         # This weird code sends a response back to the client
         self.wfile.write(response.encode())
