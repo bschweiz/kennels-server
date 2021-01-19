@@ -76,10 +76,18 @@ def get_animals_by_location(location_id):
             a.customer_id
         FROM Animal a
         WHERE a.location_id = ? 
-
         """, (location_id, ))
 # "?" references second argument of the .execute method, in this instance
 # location_id
+        animals = []
+        dataset = db_cursor.fetchall()
+        for row in dataset:
+            animal = Animal(row['id'], row['name'], 
+                            row['breed'], row['status'] , row['location_id'],
+                            row['customer_id'])
+            animals.append(animal.__dict__)
+    return json.dumps(animals)
+    
 def create_animal(animal):
     # get id value of the LAST ANIMAL IN THE LISIIIIIISSSST
     max_id = ANIMALS[-1]["id"]

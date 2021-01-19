@@ -86,6 +86,7 @@ class HandleRequests(BaseHTTPRequestHandler):
         parsed = self.parse_url(self.path)
         # Response from parse_url is a tuble with 2 items in it, WHICH MEANS
         # that the request was for '/animals' or '/animals/2'
+    
         if len(parsed) == 2:
             ( resource, id ) = parsed 
             if resource == "animals":
@@ -104,9 +105,11 @@ class HandleRequests(BaseHTTPRequestHandler):
             ( resource, key, value) = parsed # practice A(get animals by location): (animals, location_id, 1)
             # is the resource "customers" or "animals"
             # AND was there a query param that specified email as a filtering value?
-            if key == 'email' and resource == 'customers':
+            if key == "email" and resource == "customers":
                 response = get_customers_by_email(value)
-        # This weird code sends a response back to the client
+            elif key == "location_id" and resource == "animals":
+                response = get_animals_by_location(value)
+            # This weird code sends a response back to the client
         self.wfile.write(response.encode())
 
     # Here's a method on the class that overrides the parent's method.

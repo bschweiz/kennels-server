@@ -60,8 +60,16 @@ def get_customers_by_email(email):
             c.password
         FROM Customer c
         WHERE c.email = ?
-        
         """, ( email, ))
+
+        customers = []
+        dataset = db_cursor.fetchall()
+        for row in dataset:
+            customer = Customer(row['id'], row['name'], 
+                                row['address'], row['email'] , row['password'])
+            customers.append(customer.__dict__)
+
+    return json.dumps(customers)
 
 def create_customer(customer):
     # get id value of the LAST CUSTOMER IN THE LISIIIIIISSSST
