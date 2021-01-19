@@ -13,7 +13,7 @@ def get_all_customers():
             c.name,
             c.email,
             c.password
-        FROM customer c
+        FROM Customer c
         """)
         # inittialize new empty LIST to hold all the emp DICTs
         customers = []
