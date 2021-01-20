@@ -3,6 +3,7 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 from animals import get_all_animals
 from animals import get_single_animal
 from animals import get_animals_by_location
+from animals import get_animals_by_status
 from animals import create_animal
 from animals import delete_animal
 from animals import update_animal
@@ -19,6 +20,7 @@ from customers import delete_customer
 from customers import update_customer
 from employees import get_all_employees
 from employees import get_single_employee
+from employees import get_employees_by_location
 from employees import create_employee
 from employees import delete_employee
 from employees import update_employee
@@ -100,7 +102,7 @@ class HandleRequests(BaseHTTPRequestHandler):
                 else:
                     response = f'{get_all_customers()}'
         # Response from parse_url is a tuple with 3 items, WHICH MEANS
-        # that the request was for '/resource?parameter=value'
+        # that the request was for '/resource?key=value' or '/animals?status=Treatment'
         elif len(parsed) == 3:
             ( resource, key, value) = parsed # practice A(get animals by location): (animals, location_id, 1)
             # is the resource "customers" or "animals"
@@ -109,6 +111,10 @@ class HandleRequests(BaseHTTPRequestHandler):
                 response = get_customers_by_email(value)
             elif key == "location_id" and resource == "animals":
                 response = get_animals_by_location(value)
+            elif key == "location_id" and resource == "employees":
+                response = get_employees_by_location(value)
+            elif key == "status" and resource == "animals":
+                response = get_animals_by_status(value)
             # This weird code sends a response back to the client
         self.wfile.write(response.encode())
 

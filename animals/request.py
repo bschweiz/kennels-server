@@ -50,7 +50,7 @@ def get_single_animal(id):
             a.status,
             a.location_id,
             a.customer_id
-        FROM animal a
+        FROM Animal a
         WHERE a.id = ?
         """, ( id, ))
         # Load the single result into memory
@@ -79,6 +79,33 @@ def get_animals_by_location(location_id):
         """, (location_id, ))
 # "?" references second argument of the .execute method, in this instance
 # location_id
+        animals = []
+        dataset = db_cursor.fetchall()
+        for row in dataset:
+            animal = Animal(row['id'], row['name'], 
+                            row['breed'], row['status'] , row['location_id'],
+                            row['customer_id'])
+            animals.append(animal.__dict__)
+    return json.dumps(animals)
+
+def get_animals_by_status(status):
+    with sqlite3.connect('./kennel.db') as conn:
+        conn.row_factory = sqlite3.Row
+        db_cursor = conn.cursor()
+        # write the SQL query with the status is inserted into the WHERE clause
+        db_cursor.execute("""
+        SELECT
+            a.id,
+            a.name,
+            a.breed,
+            a.status,
+            a.location_id,
+            a.customer_id
+        FROM Animal a
+        WHERE a.status = ? 
+        """, (status, ))
+# "?" references second argument of the .execute method, in this instance
+# status
         animals = []
         dataset = db_cursor.fetchall()
         for row in dataset:
