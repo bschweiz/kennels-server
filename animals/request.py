@@ -120,19 +120,6 @@ def get_animals_by_status(status):
             animals.append(animal.__dict__)
     return json.dumps(animals)
 
-
-def create_animal(animal):
-    # get id value of the LAST ANIMAL IN THE LISIIIIIISSSST
-    max_id = ANIMALS[-1]["id"]
-    # Add 1 to whatever that number is
-    new_id = max_id + 1
-    # add an 'id' property to the animal DICTIONARY
-    animal["id"] = new_id
-    # add the animal dict. to the pre-existing ANIMALS list
-    ANIMALS.append(animal)
-    # return the dictionary JUST CREATED, but now with added & appropriate 'id' property
-    return animal
-
 def delete_animal(id):
     with sqlite3.connect("./kennel.db") as conn:
         db_cursor = conn.cursor()
@@ -164,3 +151,15 @@ def update_animal(id, new_animal):
     else:
         # forces 204 response
         return True
+
+def create_animal(animal):
+    # get id value of the LAST ANIMAL IN THE LISIIIIIISSSST
+    max_id = ANIMALS[-1]["id"]
+    # Add 1 to whatever that number is
+    new_id = max_id + 1
+    # add an 'id' property to the animal DICTIONARY
+    animal["id"] = new_id
+    # add the animal dict. to the pre-existing ANIMALS list
+    ANIMALS.append(animal)
+    # return the dictionary JUST CREATED, but now with added & appropriate 'id' property
+    return animal

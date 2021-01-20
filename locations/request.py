@@ -42,6 +42,32 @@ def get_single_location(id):
         return json.dumps(location.__dict__)
 
 
+def delete_location(id):
+    with sqlite3.connect("./kennel.db") as conn:
+        db_cursor = conn.cursor()
+        db_cursor.execute(""" 
+        DELETE FROM Location
+        WHERE id = ?
+        """, (id, ))
+
+def update_location(id, new_location):
+    with sqlite3.connect("./kennel.db") as conn:
+        db_cursor = conn.cursor()
+        db_cursor.execute(""" 
+        UPDATE Location
+            Set
+                address = ?
+        WHERE id = ?
+        """, (new_location['address'], id, ))
+        # count the rows affected and check if the id provided exists
+        rows_affected = db_cursor.rowcount
+    if rows_affected == 0:
+        # forces 404 response by the main module
+        return False
+    else:
+        # forces 204 response
+        return True
+
 def create_location(location):
     # get id value of the LAST LOCATION IN THE LISIIIIIISSSST
     max_id = LOCATIONS[-1]["id"]
@@ -53,27 +79,3 @@ def create_location(location):
     LOCATIONS.append(location)
     # return the dictionary JUST CREATED, but now with added & appropriate 'id' property
     return location
-
-
-def delete_location(id):
-    # initial -1 value for location index, in case one isn't found
-    location_index = -1
-    # iterate the LOCATIONS list, but use !!!enumerate()!!! so that
-    # you can access the index value of each item
-    for index, location in enumerate(LOCATIONS):
-        if location["id"] == id:
-            # Found the location. store the current index.
-            location_index = index
-    # if the location was found, use !!!pop(int)!!! to remove it from the list
-    if location_index >= 0:
-        LOCATIONS.pop(location_index)
-
-
-def update_location(id, new_location):
-    # iterate the LOCAIONS list, but use !!!!enumerate() so that
-    # you can access the index value of each item.
-    for index, location in enumerate(LOCAIONS):
-        if location["id"] == id:
-            # found the proper LOCAION now update it
-            LOCAIONS[index] = new_location
-            break
