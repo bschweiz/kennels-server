@@ -22,7 +22,7 @@ def get_all_locations():
             location = Location(row['id'],
                                 row['address'])
             locations.append(location.__dict__)
-    return json.dumps(locations)
+        return json.dumps(locations)
 
 
 def get_single_location(id):
@@ -33,7 +33,7 @@ def get_single_location(id):
         SELECT
             l.id,
             l.address
-        FROM location l
+        FROM Location l
         WHERE l.id = ?
         """, (id,))
         data = db_cursor.fetchone()

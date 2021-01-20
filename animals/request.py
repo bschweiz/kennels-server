@@ -133,7 +133,6 @@ def create_animal(animal):
     # return the dictionary JUST CREATED, but now with added & appropriate 'id' property
     return animal
 
-
 def delete_animal(id):
     with sqlite3.connect("./kennel.db") as conn:
         db_cursor = conn.cursor()
@@ -142,12 +141,26 @@ def delete_animal(id):
         WHERE id = ?
         """, (id, ))
 
-
 def update_animal(id, new_animal):
-    # iterate the ANIMALS list, but use !!!!enumerate() so that
-    # you can access the index value of each item.
-    for index, animal in enumerate(ANIMALS):
-        if animal["id"] == id:
-            # found the proper ANIMAL now update it
-            ANIMALS[index] = new_animal
-            break
+    with sqlite3.connect("./kennel.db") as conn:
+        db_cursor = conn.cursor()
+        db_cursor.execute(""" 
+        UPDATE Animal
+            Set
+                name = ?,
+                breed = ?,
+                status = ?,
+                location_id = ?,
+                customer_id = ?
+        WHERE id = ?
+        """, (new_animal['name'], new_animal['breed'],
+                new_animal['status'], new_animal['location_id'],
+                new_animal['customer_id'], id, ))
+        # count the rows affected and check if the id provided exists
+        rows_affected = db_cursor.rowcount
+    if rows_affected == 0:
+        # forces 404 response by the main module
+        return False
+    else:
+        # forces 204 response
+        return True

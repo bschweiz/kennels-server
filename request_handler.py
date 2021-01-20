@@ -96,11 +96,21 @@ class HandleRequests(BaseHTTPRequestHandler):
                     response = f'{get_single_animal(id)}'
                 else:
                     response = f'{get_all_animals()}'
-            if resource == "customers":
+            elif resource == "customers":
                 if id is not None:
                     response = f'{get_single_customer(id)}'
                 else:
                     response = f'{get_all_customers()}'
+            elif resource == "locations":
+                if id is not None:
+                    response = f'{get_single_location(id)}'
+                else:
+                    response = f'{get_all_locations()}'
+            elif resource == "employees":
+                if id is not None:
+                    response = f'{get_single_employee(id)}'
+                else:
+                    response = f'{get_all_employees()}'
         # Response from parse_url is a tuple with 3 items, WHICH MEANS
         # that the request was for '/resource?key=value' or '/animals?status=Treatment'
         elif len(parsed) == 3:
@@ -180,22 +190,23 @@ class HandleRequests(BaseHTTPRequestHandler):
         post_body = json.loads(post_body)
         # parse the URL 
         (resource, id) = self.parse_url(self.path)
-        # delete a single animal from the list
+        
+        success = False
         if resource == "animals":
-            update_animal(id, post_body)
+            success = update_animal(id, post_body)
+        elif resource == "locations":
+            success = update_location(id, post_body)
+        elif resource == "customers":
+            success = update_customer(id, post_body)
             self.wfile.write("".encode())
-        # delete a single location from the list
-        if resource == "locations":
-            update_location(id, post_body)
-            self.wfile.write("".encode())
-        # delete a single customer from the list
-        if resource == "customers":
-            update_customer(id, post_body)
-            self.wfile.write("".encode())
-        # delete a single employee from the list
-        if resource == "employees":
-            update_employee(id, post_body)
-            self.wfile.write("".encode())
+        elif resource == "employees":
+            success = update_employee(id, post_body)
+        if success:
+            self._set_headers(204)
+        else:
+            self._set_headers(404)
+            
+        self.wfile.write("".encode())
 
 # This function is not inside the class. It is the starting
 # point of this application.
