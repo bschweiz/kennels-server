@@ -7,5 +7,6 @@
             "database": "kennel.db"
         }
     ],
-    "sqltools.useNodeRuntime": true
+    "sqltools.useNodeRuntime": true,
+    "python.pythonPath": "/Users/bschweiz/.pyenv/versions/3.8.1/bin/python"
 }
