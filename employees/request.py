@@ -88,7 +88,7 @@ def update_employee(id, new_employee):
                 location_id = ?,
                 address = ?
         WHERE id = ?
-        """, (new_employee['name'], new_employee['location_id'],
+        """, (new_employee['name'], new_employee['locationId'],
                 new_employee['address'], id, ))
         # count the rows affected and check if the id provided exists
         rows_affected = db_cursor.rowcount

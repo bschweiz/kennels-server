@@ -141,8 +141,8 @@ def update_animal(id, new_animal):
                 customer_id = ?
         WHERE id = ?
         """, (new_animal['name'], new_animal['breed'],
-                new_animal['status'], new_animal['location_id'],
-                new_animal['customer_id'], id, ))
+                new_animal['status'], new_animal['locationId'],
+                new_animal['customerId'], id, ))
         # count the rows affected and check if the id provided exists
         rows_affected = db_cursor.rowcount
     if rows_affected == 0:
