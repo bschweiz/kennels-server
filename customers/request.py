@@ -27,7 +27,6 @@ def get_all_customers():
             customers.append(customer.__dict__)
     return json.dumps(customers)
 
-
 def get_single_customer(id):
     with sqlite3.connect("./kennel.db") as conn:
         conn.row_factory = sqlite3.Row
@@ -71,6 +70,36 @@ def get_customers_by_email(email):
 
     return json.dumps(customers)
 
+def delete_customer(id):
+    with sqlite3.connect("./kennel.db") as conn:
+        db_cursor = conn.cursor()
+        db_cursor.execute(""" 
+        DELETE FROM Customer
+        WHERE id = ?
+        """, (id, ))
+
+def update_customer(id, new_customer):
+    with sqlite3.connect("./kennel.db") as conn:
+        db_cursor = conn.cursor()
+        db_cursor.execute(""" 
+        UPDATE Customer
+            Set
+                name = ?,
+                address = ?,
+                email = ?,
+                password = ?
+        WHERE id = ?
+        """, (new_customer['name'], new_customer['address'],
+                new_customer['email'], new_customer['password'], id, ))
+        # count the rows affected and check if the id provided exists
+        rows_affected = db_cursor.rowcount
+    if rows_affected == 0:
+        # forces 404 response by the main module
+        return False
+    else:
+        # forces 204 response
+        return True
+
 def create_customer(customer):
     # get id value of the LAST CUSTOMER IN THE LISIIIIIISSSST
     max_id = CUSTOMERS[-1]["id"]
@@ -82,27 +111,3 @@ def create_customer(customer):
     CUSTOMERS.append(customer)
     # return the dictionary JUST CREATED, but now with added & appropriate 'id' property
     return customer
-
-
-def delete_customer(id):
-    # initial -1 value for customer index, in case one isn't found
-    customer_index = -1
-    # iterate the CUSTOMERS list, but use !!!enumerate()!!! so that
-    # you can access the index value of each item
-    for index, customer in enumerate(CUSTOMERS):
-        if customer["id"] == id:
-            # Found the customer. store the current index.
-            customer_index = index
-    # if the customer was found, use !!!pop(int)!!! to remove it from the list
-    if customer_index >= 0:
-        CUSTOMERS.pop(customer_index)
-
-
-def update_customer(id, new_customer):
-    # iterate the CUSTOMERS list, but use !!!!enumerate() so that
-    # you can access the index value of each item.
-    for index, customer in enumerate(CUSTOMERS):
-        if customer["id"] == id:
-            # found the proper CUSTOMER now update it
-            CUSTOMERS[index] = new_customer
-            break
