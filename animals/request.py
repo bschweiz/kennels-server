@@ -1,7 +1,10 @@
 import sqlite3
 import json
 from sqlite3.dbapi2 import Cursor
+
 from models import Animal
+from models.location import Location
+from models.customer import Customer
 
 
 def get_all_animals():
@@ -18,8 +21,17 @@ def get_all_animals():
             a.breed,
             a.status,
             a.location_id,
-            a.customer_id
-        FROM animal a
+            a.customer_id,
+            l.name location_name,
+            l.address location_address,
+            c.name cust_name,
+            c.address cust_address,
+            c.email cust_email
+        FROM Animal a
+        JOIN Location l
+            ON l.id = a.location_id
+        JOIN Customer c
+            ON c.id = a.customer_id
         """)
         # Initialize an empty list to hold all animal representations
         animals = []
@@ -28,12 +40,15 @@ def get_all_animals():
         # Iterate list of data returned from database
         for row in dataset:
             # Create an animal instance from the current row.
-            # Note that the database fields are specified in
-            # exact order of the parameters defined in the
-            # Animal class above.
             animal = Animal(row['id'], row['name'], row['breed'],
-                            row['status'], row['location_id'],
-                            row['customer_id'])
+                            row['status'], row['location_id'], row['customer_id'])
+            # Create a location instance for the current row
+            location = Location(row['location_id'],row['location_name'], row['location_address'])
+            # Create a customer instance for the current row
+            customer = Customer(row['customer_id'], row['cust_name'], row['cust_address'], row['cust_email'])
+            # Add the dictionary representations of the location and customer to the animal
+            animal.location = location.__dict__
+            animal.customer = customer.__dict__
             animals.append(animal.__dict__)
     # Use `json` package to properly serialize list as JSON
     return json.dumps(animals)
@@ -120,6 +135,7 @@ def get_animals_by_status(status):
             animals.append(animal.__dict__)
     return json.dumps(animals)
 
+
 def delete_animal(id):
     with sqlite3.connect("./kennel.db") as conn:
         db_cursor = conn.cursor()
@@ -127,6 +143,7 @@ def delete_animal(id):
         DELETE FROM Animal
         WHERE id = ?
         """, (id, ))
+
 
 def update_animal(id, new_animal):
     with sqlite3.connect("./kennel.db") as conn:
@@ -141,8 +158,8 @@ def update_animal(id, new_animal):
                 customer_id = ?
         WHERE id = ?
         """, (new_animal['name'], new_animal['breed'],
-                new_animal['status'], new_animal['locationId'],
-                new_animal['customerId'], id, ))
+              new_animal['status'], new_animal['locationId'],
+              new_animal['customerId'], id, ))
         # count the rows affected and check if the id provided exists
         rows_affected = db_cursor.rowcount
     if rows_affected == 0:
@@ -151,6 +168,7 @@ def update_animal(id, new_animal):
     else:
         # forces 204 response
         return True
+
 
 def create_animal(animal):
     # get id value of the LAST ANIMAL IN THE LISIIIIIISSSST
