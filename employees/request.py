@@ -1,6 +1,7 @@
 import sqlite3
 import json
 from models import Employee
+from models import Location
 
 
 def get_all_employees():
@@ -10,11 +11,16 @@ def get_all_employees():
         # write the SQL QUERY
         db_cursor.execute("""
         SELECT
-            e.id,
-            e.name,
-            e.location_id,
-            e.address
-        FROM employee e
+            e.id emp_id,
+            e.name emp_name,
+            e.location_id emp_loc,
+            e.address emp_address,
+            l.id loc_id,
+            l.name loc_name,
+            l.address loc_address
+        FROM Employee e
+        JOIN Location l
+            ON loc_id = emp_loc
         """)
         # inittialize new empty LIST to hold all the emp DICTs
         employees = []
@@ -22,9 +28,9 @@ def get_all_employees():
         dataset = db_cursor.fetchall()
         # iterate the list
         for row in dataset:
-            employee = Employee(row['id'], row['name'],
-                                row['location_id'],
-                                row['address'])
+            employee = Employee(row['emp_id'], row['emp_name'], row['emp_loc'], row['emp_address'])
+            location = Location(row['loc_id'], row['loc_name'], row['loc_address'])
+            employee.location = location.__dict__
             employees.append(employee.__dict__)
     return json.dumps(employees)
 
@@ -88,7 +94,7 @@ def update_employee(id, new_employee):
                 location_id = ?,
                 address = ?
         WHERE id = ?
-        """, (new_employee['name'], new_employee['location_id'],
+        """, (new_employee['name'], new_employee['locationId'],
                 new_employee['address'], id, ))
         # count the rows affected and check if the id provided exists
         rows_affected = db_cursor.rowcount
