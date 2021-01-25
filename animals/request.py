@@ -170,14 +170,23 @@ def update_animal(id, new_animal):
         return True
 
 
-def create_animal(animal):
-    # get id value of the LAST ANIMAL IN THE LISIIIIIISSSST
-    max_id = ANIMALS[-1]["id"]
-    # Add 1 to whatever that number is
-    new_id = max_id + 1
-    # add an 'id' property to the animal DICTIONARY
-    animal["id"] = new_id
-    # add the animal dict. to the pre-existing ANIMALS list
-    ANIMALS.append(animal)
-    # return the dictionary JUST CREATED, but now with added & appropriate 'id' property
-    return animal
+def create_animal(new_animal):
+    with sqlite3.connect("./kennel.db") as conn:
+        db_cursor = conn.cursor()
+
+        db_cursor.execute("""
+        INSERT INTO Animal
+            ( name, breed, status, location_id, customer_id )
+        VALUES
+            ( ?, ?, ?, ?, ?);
+        """, (new_animal['name'], new_animal['breed'], 
+            new_animal['status'], new_animal['locationId'], 
+            new_animal['customerId'], ))
+# The `lastrowid` property on the cursor will return
+        # the primary key of the last thing that got added to
+        # the database.
+        id = db_cursor.lastrowid
+        # Add the 'id' property to the animal dict that
+        # waws sent by client so client can see the primary key in the repsonse.
+        new_animal['id'] = id
+    return json.dumps(new_animal)
