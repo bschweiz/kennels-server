@@ -14,7 +14,7 @@ def get_all_employees():
             e.id emp_id,
             e.name emp_name,
             e.location_id emp_loc,
-            e.address emp_address,
+            e.animal_id,
             l.id loc_id,
             l.name loc_name,
             l.address loc_address
@@ -28,7 +28,7 @@ def get_all_employees():
         dataset = db_cursor.fetchall()
         # iterate the list
         for row in dataset:
-            employee = Employee(row['emp_id'], row['emp_name'], row['emp_loc'], row['emp_address'])
+            employee = Employee(row['emp_id'], row['emp_name'], row['emp_loc'], row['animal_id'])
             location = Location(row['loc_id'], row['loc_name'], row['loc_address'])
             employee.location = location.__dict__
             employees.append(employee.__dict__)
@@ -43,13 +43,13 @@ def get_single_employee(id):
             e.id,
             e.name,
             e.location_id,
-            e.address
+            e.animal_id
         FROM Employee e
         WHERE e.id = ?
         """, (id,))
         data = db_cursor.fetchone()
         employee = Employee(data['id'], data['name'], data['location_id'],
-                            data['address'])
+                            data['animal_id'])
         return json.dumps(employee.__dict__)
 
 def get_employees_by_location(location_id):
@@ -92,10 +92,10 @@ def update_employee(id, new_employee):
             Set
                 name = ?,
                 location_id = ?,
-                address = ?
+                animal_id = ?
         WHERE id = ?
         """, (new_employee['name'], new_employee['locationId'],
-                new_employee['address'], id, ))
+                new_employee['animalId'], id, ))
         # count the rows affected and check if the id provided exists
         rows_affected = db_cursor.rowcount
     if rows_affected == 0:
@@ -105,14 +105,25 @@ def update_employee(id, new_employee):
         # forces 204 response
         return True
 
-def create_employee(employee):
-    # get id value of the LAST EMPLOYEE IN THE LISIIIIIISSSST
-    max_id = EMPLOYEES[-1]["id"]
-    # Add 1 to whatever that number is
-    new_id = max_id + 1
-    # add an 'id' property to the employee DICTIONARY
-    employee["id"] = new_id
-    # add the employee dict. to the pre-existing EMPLOYEES list
-    EMPLOYEES.append(employee)
-    # return the dictionary JUST CREATED, but now with added & appropriate 'id' property
-    return employee
+def create_employee(new_employee):
+    with sqlite3.connect("./kennel.db") as conn:
+        db_cursor = conn.cursor()
+
+        db_cursor.execute("""
+        INSERT INTO Employee
+            ( name, location_id, animal_id )
+        VALUES
+            ( ?, ?, ? );
+        """, (
+                new_employee['name'], 
+                new_employee['locationId'], 
+                new_employee['animalId'], )
+        )
+# The `lastrowid` property on the cursor will return
+        # the primary key of the last thing that got added to
+        # the database.
+        id = db_cursor.lastrowid
+        # Add the 'id' property to the employee dict that
+        # waws sent by client so client can see the primary key in the repsonse.
+        new_employee['id'] = id
+    return json.dumps(new_employee)
