@@ -74,7 +74,6 @@ class HandleRequests(BaseHTTPRequestHandler):
                 pass # No route parameter exists: /animals
             except ValueError:
                 pass # Request had treailing slash: /animals/
-
             return ( resource, id )
 
     # Here's a method on the class that overrides the parent's method.

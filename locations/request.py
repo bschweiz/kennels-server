@@ -10,6 +10,7 @@ def get_all_locations():
         db_cursor.execute("""
         SELECT
             l.id,
+            l.name,
             l.address
         FROM location l
         """)
@@ -19,7 +20,7 @@ def get_all_locations():
         dataset = db_cursor.fetchall()
         # iterate the list
         for row in dataset:
-            location = Location(row['id'],
+            location = Location(row['id'], row['name'],
                                 row['address'])
             locations.append(location.__dict__)
         return json.dumps(locations)
@@ -32,12 +33,13 @@ def get_single_location(id):
         db_cursor.execute("""
         SELECT
             l.id,
+            l.name,
             l.address
         FROM Location l
         WHERE l.id = ?
         """, (id,))
         data = db_cursor.fetchone()
-        location = Location(data['id'],
+        location = Location(data['id'], data['name'],
                             data['address'])
         return json.dumps(location.__dict__)
 

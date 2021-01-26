@@ -3,6 +3,7 @@ import json
 from sqlite3.dbapi2 import Cursor
 
 from models import Animal
+from models import location
 from models.location import Location
 from models.customer import Customer
 
@@ -63,20 +64,35 @@ def get_single_animal(id):
         db_cursor.execute("""
         SELECT
             a.id,
-            a.name,
+            a.name animal_name,
             a.breed,
             a.status,
             a.location_id,
-            a.customer_id
+            a.customer_id,
+            l.id loc_id,
+            l.name loc_name,
+            l.address loc_address,
+            c.id cust_id,
+            c.name cust_name,
+            c.address cust_address
         FROM Animal a
+        JOIN Location l
+            ON l.id = a.location_id
+        JOIN Customer c
+            ON  c.id = a.customer_id
         WHERE a.id = ?
         """, (id, ))
         # Load the single result into memory
         data = db_cursor.fetchone()
         # Create an animal instance from the current row
-        animal = Animal(data['id'], data['name'], data['breed'],
+        animal = Animal(data['id'], data['animal_name'], data['breed'],
                         data['status'], data['location_id'],
                         data['customer_id'])
+        location = Location(data['loc_id'], data['loc_name'], data['loc_address'])
+        animal.location = location.__dict__
+        customer = Customer(data['cust_id'], data['cust_name'], data['cust_address'])
+        animal.customer = customer.__dict__
+
         return json.dumps(animal.__dict__)
 
 
@@ -179,9 +195,13 @@ def create_animal(new_animal):
             ( name, breed, status, location_id, customer_id )
         VALUES
             ( ?, ?, ?, ?, ?);
-        """, (new_animal['name'], new_animal['breed'], 
-            new_animal['status'], new_animal['locationId'], 
-            new_animal['customerId'], ))
+        """, (
+                new_animal['name'], 
+                new_animal['breed'], 
+                new_animal['status'], 
+                new_animal['locationId'], 
+                new_animal['customerId'], )
+        )
 # The `lastrowid` property on the cursor will return
         # the primary key of the last thing that got added to
         # the database.
